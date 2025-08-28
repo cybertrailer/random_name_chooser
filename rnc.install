@@ -1,0 +1,228 @@
+<?php
+
+/**
+ * @file
+ * Install/uninstall/update hooks for the RNC module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function rnc_schema() {
+  $schema = [];
+
+  // Per-user list entries.
+  $schema['rnc_entries'] = [
+    'description' => 'Stores names for the Random Name Chooser per list owner (uid).',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'description' => 'Primary Key',
+      ],
+      'uid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'description' => 'List owner user ID',
+      ],
+      'name' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Participant name',
+      ],
+      'password' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Participant password (plain text, visible to admin)',
+      ],
+      'spouse_letter' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => FALSE,
+        'description' => 'Spouse group letter',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'uid' => ['uid'],
+      'uid_name' => ['uid', 'name'],
+    ],
+  ];
+
+  // Per-user matches (one-to-one).
+  $schema['rnc_matches'] = [
+    'description' => 'Stores generated one-to-one matches per list owner (uid).',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'description' => 'Primary Key',
+      ],
+      'uid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'description' => 'List owner user ID',
+      ],
+      'selector_entry_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'description' => 'Entry ID of selector',
+      ],
+      'selected_entry_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'description' => 'Entry ID of selected match',
+      ],
+    ],
+    'primary key' => ['id'],
+    'unique keys' => [
+      'unique_selector_per_uid' => ['uid', 'selector_entry_id'],
+    ],
+    'indexes' => [
+      'uid' => ['uid'],
+      'selected_idx' => ['uid', 'selected_entry_id'],
+    ],
+  ];
+
+  // Per-user settings.
+  $schema['rnc_user_settings'] = [
+    'description' => 'Stores per-user settings for RNC.',
+    'fields' => [
+      'uid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'description' => 'User ID (owner)',
+      ],
+      'max_entries' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 25,
+        'description' => 'Max entries to list',
+      ],
+      'enable_spouse_letter' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 1,
+        'description' => 'Enable spouse input (0/1)',
+      ],
+      'custom_message' => [
+        'type' => 'varchar',
+        'length' => 512,
+        'not null' => FALSE,
+        'description' => 'Custom message above form',
+      ],
+      'instructions' => [
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+        'description' => 'Instructions (HTML allowed)',
+      ],
+    ],
+    'primary key' => ['uid'],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function rnc_uninstall() {
+  $connection = \Drupal::database();
+  // Drop tables explicitly (Drupal also drops schema-defined tables on uninstall,
+  // but this is safe for environments where that behavior is altered).
+  foreach (['rnc_matches', 'rnc_entries', 'rnc_user_settings'] as $table) {
+    if ($connection->schema()->tableExists($table)) {
+      $connection->schema()->dropTable($table);
+    }
+  }
+}
+
+/**
+ * Add rnc_user_settings table for sites that installed earlier versions.
+ */
+function rnc_update_9001() {
+  $connection = \Drupal::database();
+  $schema = $connection->schema();
+
+  if (!$schema->tableExists('rnc_user_settings')) {
+    $schema->createTable('rnc_user_settings', [
+      'description' => 'Stores per-user settings for RNC.',
+      'fields' => [
+        'uid' => [
+          'type' => 'int',
+          'not null' => TRUE,
+          'unsigned' => TRUE,
+          'description' => 'User ID (owner)',
+        ],
+        'max_entries' => [
+          'type' => 'int',
+          'not null' => TRUE,
+          'default' => 25,
+          'description' => 'Max entries to list',
+        ],
+        'enable_spouse_letter' => [
+          'type' => 'int',
+          'size' => 'tiny',
+          'not null' => TRUE,
+          'default' => 1,
+          'description' => 'Enable spouse input (0/1)',
+        ],
+        'instructions' => [
+          'type' => 'text',
+          'size' => 'big',
+          'not null' => FALSE,
+          'description' => 'Instructions (HTML allowed)',
+        ],
+      ],
+      'primary key' => ['uid'],
+    ]);
+  }
+
+  // Ensure indexes/unique keys exist on legacy installs.
+  if ($schema->tableExists('rnc_matches')) {
+    // Unique selector per uid.
+    if (!$schema->indexExists('rnc_matches', 'unique_selector_per_uid')) {
+      // Some DB drivers treat unique keys separately; try addUniqueKey first.
+      try {
+        $schema->addUniqueKey('rnc_matches', 'unique_selector_per_uid', ['uid', 'selector_entry_id']);
+      }
+      catch (\Exception $e) {
+        // Fallback: ignore if it already exists under a different internal name.
+      }
+    }
+    if (!$schema->indexExists('rnc_matches', 'selected_idx')) {
+      try {
+        $schema->addIndex('rnc_matches', 'selected_idx', ['uid', 'selected_entry_id']);
+      }
+      catch (\Exception $e) {}
+    }
+  }
+
+  if ($schema->tableExists('rnc_entries')) {
+    if (!$schema->indexExists('rnc_entries', 'uid')) {
+      try {
+        $schema->addIndex('rnc_entries', 'uid', ['uid']);
+      }
+      catch (\Exception $e) {}
+    }
+    if (!$schema->indexExists('rnc_entries', 'uid_name')) {
+      try {
+        $schema->addIndex('rnc_entries', 'uid_name', ['uid', 'name']);
+      }
+      catch (\Exception $e) {}
+    }
+  }
+
+  return t('Added rnc_user_settings table and ensured indexes.');
+}

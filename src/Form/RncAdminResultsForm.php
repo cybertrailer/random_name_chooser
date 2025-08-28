@@ -1,0 +1,138 @@
+<?php
+
+namespace Drupal\rnc\Form;
+
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Admin form to view and reset generated matches for the current user's list.
+ */
+class RncAdminResultsForm extends FormBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFormId() {
+    return 'rnc_admin_results_form';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state) {
+    $uid = \Drupal::currentUser()->id();
+    $connection = \Drupal::database();
+
+    // Confirmation step.
+    if ($form_state->get('confirm_reset')) {
+      $form['confirmation'] = [
+        '#markup' => $this->t('<p>Are you sure you want to reset your matches? This will not delete the names in your list.</p>'),
+      ];
+
+      $form['confirm'] = [
+        '#type' => 'submit',
+        '#value' => $this->t('Yes, reset matches'),
+        '#submit' => ['::confirmResetMatches'],
+        '#button_type' => 'danger',
+      ];
+
+      $form['cancel'] = [
+        '#type' => 'submit',
+        '#value' => $this->t('Cancel'),
+        '#submit' => ['::cancelReset'],
+      ];
+
+      return $form;
+    }
+
+    // Display matches table.
+    $query = $connection->select('rnc_matches', 'm');
+    $query->leftJoin('rnc_entries', 's', 'm.selector_entry_id = s.id');
+    $query->leftJoin('rnc_entries', 't', 'm.selected_entry_id = t.id');
+    $query->fields('m', ['id']);
+    $query->addField('s', 'name', 'selector_name');
+    $query->addField('t', 'name', 'matched_name');
+    $query->condition('m.uid', $uid);
+    $results = $query->execute()->fetchAll();
+
+    if (empty($results)) {
+      $form['message'] = [
+        '#markup' => $this->t('<div>No matches generated yet for your list.</div>'),
+      ];
+    }
+    else {
+      $header = [
+        $this->t('Selector'),
+        $this->t('Matched With'),
+      ];
+
+      $rows = [];
+      foreach ($results as $r) {
+        $rows[] = [
+          $r->selector_name ?? '',
+          $r->matched_name ?? '',
+        ];
+      }
+
+      $form['matches'] = [
+        '#type' => 'table',
+        '#header' => $header,
+        '#rows' => $rows,
+        '#empty' => $this->t('No matches found.'),
+      ];
+    }
+
+    // Reset matches button.
+    $form['reset'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Reset Matches'),
+      '#submit' => ['::askResetConfirmation'],
+      '#button_type' => 'danger',
+    ];
+
+    return $form;
+  }
+
+  /**
+   * Ask for confirmation before resetting matches.
+   */
+  public function askResetConfirmation(array &$form, FormStateInterface $form_state) {
+    $form_state->set('confirm_reset', TRUE);
+    $form_state->setRebuild();
+  }
+
+  /**
+   * Perform the matches reset after confirmation.
+   */
+  public function confirmResetMatches(array &$form, FormStateInterface $form_state) {
+    $uid = \Drupal::currentUser()->id();
+    $connection = \Drupal::database();
+
+    // Delete only matches for this user; leave entries intact.
+    $connection->delete('rnc_matches')
+      ->condition('uid', $uid)
+      ->execute();
+
+    $this->messenger()->addStatus($this->t('Your matches have been reset.'));
+    $form_state->set('confirm_reset', FALSE);
+    $form_state->setRebuild();
+  }
+
+  /**
+   * Cancel the reset and return to matches display.
+   */
+  public function cancelReset(array &$form, FormStateInterface $form_state) {
+    $form_state->set('confirm_reset', FALSE);
+    $form_state->setRebuild();
+    $this->messenger()->addStatus($this->t('Reset canceled.'));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    // Not used; submit handled by reset confirmation callbacks.
+  }
+
+}

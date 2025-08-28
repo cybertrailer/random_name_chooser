@@ -1,0 +1,64 @@
+rnc.admin:
+  path: '/admin/config/content/rcn'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Random Name Chooser'
+  requirements:
+    _role: 'authenticated'
+
+rnc.settings:
+  path: '/admin/config/system/rnc'
+  defaults:
+    _form: '\Drupal\rnc\Form\RncSettingsForm'
+    _title: 'Random Name Chooser settings'
+  requirements:
+    _role: 'authenticated'
+    _permission: 'administer rnc permissions'
+
+rnc.results:
+  path: '/admin/config/system/rnc/results'
+  defaults:
+    _form: '\Drupal\rnc\Form\RncAdminResultsForm'
+    _title: 'Random Name Chooser Results'
+  requirements:
+    _role: 'authenticated'
+    _permission: 'administer rnc permissions'
+
+rnc.add_name:
+  path: '/random-name-chooser'
+  defaults:
+    _form: '\Drupal\rnc\Form\RncAddNameForm'
+    _title: 'Add names to the list'
+  requirements:
+    _role: 'authenticated'
+    _permission: 'administer rnc permissions'
+
+rnc.select_name:
+  path: '/random-name-chooser/select'
+  defaults:
+    _form: '\Drupal\rnc\Form\RncSelectNameForm'
+    _title: 'Select your random match'
+    _extra: 'This is extra'
+  requirements:
+    _permission: 'access content'
+
+rnc.select_uid:
+  path: '/random-name-chooser/{uid}'
+  defaults:
+    _form: '\Drupal\rnc\Form\RncSelectNameForm'
+    _title: 'Select Your Name'
+  requirements:
+    _permission: 'access content'
+    
+rnc.delete_name:
+  path: '/admin/config/content/rnc/delete/{id}'
+  defaults:
+    _form: '\Drupal\rnc\Form\RncDeleteNameForm'
+    _title: 'Delete name'
+  requirements:
+    _role: 'authenticated'
+    _permission: 'administer rnc permissions'
+  options:
+    parameters:
+      id:
+        type: integer

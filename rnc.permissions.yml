@@ -1,0 +1,4 @@
+administer rnc permissions:
+  title: 'RNC Permissions'
+  description: 'Use Random Name Chooser.'
+  restrict: true

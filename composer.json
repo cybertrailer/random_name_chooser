@@ -1,0 +1,16 @@
+{
+  "name": "drupal/rnc",
+  "type": "drupal-module",
+  "description": "Creates a list of matching names.",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0-or-later",
+  "homepage": "https://www.drupal.org/project/rnc",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/rnc",
+    "source": "https://git.drupalcode.org/project/rnc"
+  },
+  "require": {
+    "drupal/core" : "^10 || ^11"
+  }
+}

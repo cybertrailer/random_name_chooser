@@ -1,0 +1,4 @@
+services:
+  rnc.matcher:
+    class: Drupal\rnc\Service\RncMatcher
+    arguments: ['@database', '@messenger']

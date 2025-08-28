@@ -1,0 +1,34 @@
+rnc.admin:
+  title: 'Random Name Chooser'
+  description: 'Manage Random Name Chooser.'
+  parent: system.admin_config_content
+  route_name: rnc.admin
+  weight: -10
+
+rnc.admin.settings:
+  title: 'Settings'
+  description: 'Configure Random Name Chooser settings.'
+  parent: rnc.admin
+  route_name: rnc.settings
+  weight: 0
+
+rnc.admin.results:
+  title: 'Results'
+  description: 'View matches for the Random Name Chooser.'
+  parent: rnc.admin
+  route_name: rnc.results
+  weight: 1
+
+rnc.names:
+  title: 'Name List'
+  description: 'Random Name Chooser front-end page.'
+  parent: rnc.admin
+  route_name: rnc.add_name
+  weight: 2
+
+rnc.menu.select_name:
+  title: 'Reveal My Match'
+  description: 'Reveal your match for your personal RNC list.'
+  route_name: rnc.select_name
+  menu_name: main
+  weight: 10
