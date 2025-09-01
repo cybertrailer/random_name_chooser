@@ -91,6 +91,14 @@ class RncAdminResultsForm extends FormBase {
       '#button_type' => 'danger',
     ];
 
+    // --- Add names button ---
+    $form['actions']['add_names'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Add Names'),
+      '#submit' => ['::addNAmes'],
+      '#limit_validation_errors' => [],
+    ];
+
     return $form;
   }
 
@@ -100,6 +108,13 @@ class RncAdminResultsForm extends FormBase {
   public function askResetConfirmation(array &$form, FormStateInterface $form_state) {
     $form_state->set('confirm_reset', TRUE);
     $form_state->setRebuild();
+  }
+
+  /**
+   * Trigger add names.
+   */
+  public function addNames(array &$form, FormStateInterface $form_state) {
+    $form_state->setRedirect('rnc.add_name');
   }
 
   /**

@@ -98,7 +98,6 @@ class RncSettingsForm extends FormBase {
       '#weight' => 100,
     ];
 
-
     $form['actions']['#type'] = 'actions';
     $form['actions']['submit'] = [
       '#type' => 'submit',
@@ -106,7 +105,23 @@ class RncSettingsForm extends FormBase {
       '#button_type' => 'primary',
     ];
 
+    // --- Add names button ---
+    $form['actions']['add_names'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Add Names'),
+      '#submit' => ['::addNAmes'],
+      '#button_type' => 'primary',
+      '#limit_validation_errors' => [],
+    ];
+
     return $form;
+  }
+
+  /**
+   * Trigger add names.
+   */
+  public function addNames(array &$form, FormStateInterface $form_state) {
+    $form_state->setRedirect('rnc.add_name');
   }
 
   /**

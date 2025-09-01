@@ -61,7 +61,7 @@ class RncAddNameForm extends FormBase {
 
       $form['actions']['confirm'] = [
         '#type' => 'submit',
-        '#value' => $this->t('Yes, reset my list'),
+        '#value' => $this->t('Yes, delete my name list'),
         '#submit' => ['::resetListConfirmed'],
       ];
 
@@ -158,6 +158,14 @@ class RncAddNameForm extends FormBase {
       '#limit_validation_errors' => [],
     ];
 
+    // --- View matches button ---
+    $form['actions']['view_match'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('View Match'),
+      '#submit' => ['::viewMatch'],
+      '#limit_validation_errors' => [],
+    ];
+
     return $form;
   }
 
@@ -190,6 +198,13 @@ class RncAddNameForm extends FormBase {
   }
 
   /**
+   * Trigger view match.
+   */
+  public function viewMatch(array &$form, FormStateInterface $form_state) {
+    $form_state->setRedirect('rnc.results');
+  }
+
+  /**
    * Execute reset after confirmation.
    */
   public function resetListConfirmed(array &$form, FormStateInterface $form_state) {
@@ -205,7 +220,7 @@ class RncAddNameForm extends FormBase {
       ->condition('uid', $uid)
       ->execute();
 
-    $this->messenger->addWarning($this->t('Your list has been reset.'));
+    $this->messenger->addWarning($this->t('Your name list has been cleared.'));
     $form_state->setRedirect('rnc.add_name');
   }
 
