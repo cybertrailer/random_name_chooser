@@ -1,13 +1,5 @@
-rnc.admin:
-  path: '/admin/config/content/rcn'
-  defaults:
-    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
-    _title: 'Random Name Chooser'
-  requirements:
-    _role: 'authenticated'
-
 rnc.settings:
-  path: '/admin/config/system/rnc'
+  path: '/admin/config/content'
   defaults:
     _form: '\Drupal\rnc\Form\RncSettingsForm'
     _title: 'Random Name Chooser settings'
@@ -16,10 +8,10 @@ rnc.settings:
     _permission: 'administer rnc permissions'
 
 rnc.results:
-  path: '/admin/config/system/rnc/results'
+  path: '/random-name-chooser/results'
   defaults:
     _form: '\Drupal\rnc\Form\RncAdminResultsForm'
-    _title: 'Random Name Chooser Results'
+    _title: 'Name match results'
   requirements:
     _role: 'authenticated'
     _permission: 'administer rnc permissions'
@@ -50,6 +42,15 @@ rnc.select_uid:
   requirements:
     _permission: 'access content'
     
+rnc.user_tokens_list:
+  path: 'user/{user}/random-name-chooser'
+  defaults:
+    _form: '\Drupal\rnc\Form\RncAddNameForm'
+    _title: 'Random Name'
+  requirements:
+    _role: 'authenticated'
+    _permission: 'administer rnc permissions'
+
 rnc.delete_name:
   path: '/admin/config/content/rnc/delete/{id}'
   defaults:
