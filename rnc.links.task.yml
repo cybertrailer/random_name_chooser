@@ -1,0 +1,4 @@
+rnc.user_tokens_list:
+  route_name: rnc.user_tokens_list
+  base_route: entity.user.canonical
+  title: 'Random Name'
