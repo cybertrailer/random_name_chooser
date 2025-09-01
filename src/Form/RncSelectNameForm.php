@@ -45,10 +45,14 @@ class RncSelectNameForm extends FormBase {
  
     // Load user setting.
     $settings = $this->database->select('rnc_user_settings', 's')
-      ->fields('s', ['instructions'])
+      ->fields('s', ['group_name', 'instructions'])
       ->condition('uid', $uid)
       ->execute()
       ->fetchAssoc() ?: ['instructions' => ''];
+
+    if (!empty($settings['group_name'])) {
+      $form['group_name'] = ['#markup' => '<h3>' . $settings['group_name'] . '</h3>'];
+    }
 
     if (!empty($settings['instructions'])) {
       $form['instructions'] = ['#markup' => '<p>' . $settings['instructions'] . '</p>'];
