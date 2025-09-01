@@ -1,14 +1,14 @@
 {
-  "name": "drupal/rnc",
+  "name": "drupal/random_name_chooser",
   "type": "drupal-module",
   "description": "Creates a list of matching names.",
   "keywords": ["Drupal"],
   "license": "GPL-2.0-or-later",
-  "homepage": "https://www.drupal.org/project/rnc",
+  "homepage": "https://www.drupal.org/project/random_name_chooser",
   "minimum-stability": "dev",
   "support": {
-    "issues": "https://www.drupal.org/project/issues/rnc",
-    "source": "https://git.drupalcode.org/project/rnc"
+    "issues": "https://www.drupal.org/project/issues/random_name_chooser",
+    "source": "https://git.drupalcode.org/project/random_name_chooser"
   },
   "require": {
     "drupal/core" : "^10 || ^11"
