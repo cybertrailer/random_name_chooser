@@ -77,6 +77,12 @@ class RncSettingsForm extends FormBase {
       '#default_value' => $settings['enable_spouse_letter'] ?? 0,
     ];
 
+    $form['group_name'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Group Name'),
+      '#default_value' => $settings['group_name'] ?? '',
+    ];
+
     $form['instructions'] = [
       '#type' => 'text_format',
       '#title' => $this->t('Instructions for participants'),
@@ -92,7 +98,6 @@ class RncSettingsForm extends FormBase {
       '#weight' => 100,
     ];
 
-
     $form['actions']['#type'] = 'actions';
     $form['actions']['submit'] = [
       '#type' => 'submit',
@@ -100,7 +105,23 @@ class RncSettingsForm extends FormBase {
       '#button_type' => 'primary',
     ];
 
+    // --- Add names button ---
+    $form['actions']['add_names'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Add Names'),
+      '#submit' => ['::addNAmes'],
+      '#button_type' => 'primary',
+      '#limit_validation_errors' => [],
+    ];
+
     return $form;
+  }
+
+  /**
+   * Trigger add names.
+   */
+  public function addNames(array &$form, FormStateInterface $form_state) {
+    $form_state->setRedirect('rnc.add_name');
   }
 
   /**
@@ -115,6 +136,7 @@ class RncSettingsForm extends FormBase {
       ->fields([
         'max_entries' => $form_state->getValue('max_entries'),
         'enable_spouse_letter' => $form_state->getValue('enable_spouse_letter'),
+        'group_name' => $form_state->getValue('group_name'),
         'instructions' => $form_state->getValue('instructions')['value'],
       ])
       ->execute();
