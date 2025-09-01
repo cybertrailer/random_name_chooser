@@ -115,11 +115,11 @@ function rnc_schema() {
         'default' => 1,
         'description' => 'Enable spouse input (0/1)',
       ],
-      'custom_message' => [
+            'group_name' => [
         'type' => 'varchar',
         'length' => 512,
         'not null' => FALSE,
-        'description' => 'Custom message above form',
+        'description' => 'Group name for list',
       ],
       'instructions' => [
         'type' => 'text',
