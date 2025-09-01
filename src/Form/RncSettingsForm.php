@@ -77,6 +77,12 @@ class RncSettingsForm extends FormBase {
       '#default_value' => $settings['enable_spouse_letter'] ?? 0,
     ];
 
+    $form['group_name'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Group Name'),
+      '#default_value' => $settings['group_name'] ?? '',
+    ];
+
     $form['instructions'] = [
       '#type' => 'text_format',
       '#title' => $this->t('Instructions for participants'),
@@ -115,6 +121,7 @@ class RncSettingsForm extends FormBase {
       ->fields([
         'max_entries' => $form_state->getValue('max_entries'),
         'enable_spouse_letter' => $form_state->getValue('enable_spouse_letter'),
+        'group_name' => $form_state->getValue('group_name'),
         'instructions' => $form_state->getValue('instructions')['value'],
       ])
       ->execute();
