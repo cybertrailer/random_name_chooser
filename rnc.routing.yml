@@ -1,5 +1,5 @@
 rnc.settings:
-  path: '/admin/config/content'
+  path: '/admin/config/content/random_name_chooser'
   defaults:
     _form: '\Drupal\rnc\Form\RncSettingsForm'
     _title: 'Random Name Chooser settings'
