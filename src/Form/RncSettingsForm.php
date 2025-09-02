@@ -64,13 +64,6 @@ class RncSettingsForm extends FormBase {
     $uid = $this->currentUser()->id();
 	$settings = $this->loadSettings();
 	
-    $form['max_entries'] = [
-      '#type' => 'number',
-      '#title' => $this->t('Maximum entries'),
-      '#default_value' => $settings['max_entries'] ?? 20,
-      '#min' => 1,
-    ];
-
     $form['enable_spouse_letter'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Enable spouse letter'),
@@ -134,7 +127,6 @@ class RncSettingsForm extends FormBase {
     $this->database->merge('rnc_user_settings')
       ->key(['uid' => $uid])
       ->fields([
-        'max_entries' => $form_state->getValue('max_entries'),
         'enable_spouse_letter' => $form_state->getValue('enable_spouse_letter'),
         'group_name' => $form_state->getValue('group_name'),
         'instructions' => $form_state->getValue('instructions')['value'],
