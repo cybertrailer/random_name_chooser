@@ -102,12 +102,6 @@ function rnc_schema() {
         'unsigned' => TRUE,
         'description' => 'User ID (owner)',
       ],
-      'max_entries' => [
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 25,
-        'description' => 'Max entries to list',
-      ],
       'enable_spouse_letter' => [
         'type' => 'int',
         'size' => 'tiny',
