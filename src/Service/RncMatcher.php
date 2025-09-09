@@ -5,11 +5,17 @@ namespace Drupal\rnc\Service;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Messenger\MessengerInterface;
 
+/**
+ * Set RncMatcher
+ */
 class RncMatcher {
 
   protected $database;
   protected $messenger;
 
+  /**
+   * Get database and messneger into array.
+   */
   public function __construct(Connection $database, MessengerInterface $messenger) {
     $this->database = $database;
     $this->messenger = $messenger;
@@ -38,7 +44,7 @@ class RncMatcher {
       $assignments = [];
 
       foreach ($entries as $selector) {
-        $match = null;
+        $match = NULL;
         foreach ($shuffled as $candidate) {
           if ($candidate->id !== $selector->id && $candidate->spouse_letter !== $selector->spouse_letter) {
             $match = $candidate;
@@ -46,7 +52,7 @@ class RncMatcher {
           }
         }
 
-        if ($match === null) {
+        if ($match === NULL) {
           $valid = FALSE;
           break;
         }
@@ -96,4 +102,5 @@ class RncMatcher {
 
     return $count > 0;
   }
+
 }
