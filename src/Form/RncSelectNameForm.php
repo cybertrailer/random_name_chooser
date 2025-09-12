@@ -43,7 +43,7 @@ class RncSelectNameForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, $uid = NULL) {
 
     if (empty($uid)) {
-      $uid = \Drupal::currentUser()->id();
+      $uid = $this->currentUser()->id();
     }
 
     $form['uid'] = [
