@@ -79,7 +79,7 @@ class RncMatcher {
               'selector_id' => $selector_id,
               'match_id' => $match->id,
               'selected_name' => $match->name,
-              'created' => \Drupal::time()->getRequestTime(),
+              'created' => $this->time()->getRequestTime(),
             ])
             ->execute();
         }
