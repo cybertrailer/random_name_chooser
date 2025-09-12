@@ -66,10 +66,8 @@ class RncSelectNameForm extends FormBase {
       $form['instructions'] = ['#markup' => '<p>' . $settings['instructions'] . '</p>'];
     }
 
-    $connection = \Drupal::database();
-
     // Load participants for this user only.
-    $result = $connection->select('rnc_entries', 'e')
+    $result = $this->database->select('rnc_entries', 'e')
       ->fields('e', ['id', 'name'])
       ->condition('e.uid', $uid)
       ->orderBy('e.name', 'ASC')
@@ -118,7 +116,7 @@ class RncSelectNameForm extends FormBase {
     $selector_id = (int) $form_state->getValue('selector_entry_id');
     $password = (string) $form_state->getValue('password');
 
-    $stored = \Drupal::database()->select('rnc_entries', 'e')
+    $stored = $this->database->select('rnc_entries', 'e')
       ->fields('e', ['password'])
       ->condition('e.id', $selector_id)
       ->condition('e.uid', $uid)
@@ -136,10 +134,9 @@ class RncSelectNameForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $uid = $form_state->getValue('uid');
     $selector_id = (int) $form_state->getValue('selector_entry_id');
-    $connection = \Drupal::database();
 
     // Load participant (scoped to user).
-    $participant = $connection->select('rnc_entries', 'e')
+    $participant = $this->database->select('rnc_entries', 'e')
       ->fields('e', ['id', 'name'])
       ->condition('e.id', $selector_id)
       ->condition('e.uid', $uid)
@@ -152,7 +149,7 @@ class RncSelectNameForm extends FormBase {
     }
 
     // Do we already have matches for this user?
-    $matches_exist = (int) $connection->select('rnc_matches', 'm')
+    $matches_exist = (int) $this->database->select('rnc_matches', 'm')
       ->condition('m.uid', $uid)
       ->countQuery()
       ->execute()
@@ -171,7 +168,7 @@ class RncSelectNameForm extends FormBase {
 
     // Correct usage: call leftJoin on the query object,
     // then call fields() on the query.
-    $q = $connection->select('rnc_matches', 'm');
+    $q = $this->database->select('rnc_matches', 'm');
     // Modify $q, returns alias string.
     $q->leftJoin('rnc_entries', 'e', 'm.selected_entry_id = e.id');
     // safe: fields() invoked on $q, using alias 'e'.
@@ -200,9 +197,8 @@ class RncSelectNameForm extends FormBase {
    * @throws \Exception
    */
   protected function generateMatches($uid) {
-    $connection = \Drupal::database();
 
-    $entries = $connection->select('rnc_entries', 'e')
+    $entries = $this->database->select('rnc_entries', 'e')
       ->fields('e', ['id', 'name', 'spouse_letter'])
       ->condition('e.uid', $uid)
       ->execute()
@@ -256,9 +252,9 @@ class RncSelectNameForm extends FormBase {
 
       if ($valid) {
         // Clear existing matches for this user and insert new pairs.
-        $connection->delete('rnc_matches')->condition('uid', $uid)->execute();
+        $this->database->delete('rnc_matches')->condition('uid', $uid)->execute();
         foreach ($pairs as $p) {
-          $connection->insert('rnc_matches')->fields($p)->execute();
+          $this->database->insert('rnc_matches')->fields($p)->execute();
         }
         return;
       }
