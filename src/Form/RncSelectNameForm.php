@@ -12,12 +12,20 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class RncSelectNameForm extends FormBase {
 
+  /**
+   * Database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
   protected $database;
 
   public function __construct(Connection $database) {
     $this->database = $database;
   }
 
+  /**
+   * Create array container.
+   */
   public static function create(ContainerInterface $container) {
     return new static($container->get('database'));
   }
@@ -34,15 +42,15 @@ class RncSelectNameForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state, $uid = NULL) {
 
-  if (empty($uid)) {
-    $uid = \Drupal::currentUser()->id();
-  }
+    if (empty($uid)) {
+      $uid = \Drupal::currentUser()->id();
+    }
 
-  $form['uid'] = [
-    '#type' => 'hidden',
-    '#value' => $uid,
-  ];
- 
+    $form['uid'] = [
+      '#type' => 'hidden',
+      '#value' => $uid,
+    ];
+
     // Load user setting.
     $settings = $this->database->select('rnc_user_settings', 's')
       ->fields('s', ['group_name', 'instructions'])
@@ -58,7 +66,7 @@ class RncSelectNameForm extends FormBase {
       $form['instructions'] = ['#markup' => '<p>' . $settings['instructions'] . '</p>'];
     }
 
-	$connection = \Drupal::database();
+    $connection = \Drupal::database();
 
     // Load participants for this user only.
     $result = $connection->select('rnc_entries', 'e')
@@ -106,7 +114,7 @@ class RncSelectNameForm extends FormBase {
    * Validate password belongs to selected participant for this user.
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-	$uid = $form_state->getValue('uid');
+    $uid = $form_state->getValue('uid');
     $selector_id = (int) $form_state->getValue('selector_entry_id');
     $password = (string) $form_state->getValue('password');
 
@@ -126,7 +134,7 @@ class RncSelectNameForm extends FormBase {
    * Submit: generate (if needed) and reveal match.
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-	$uid = $form_state->getValue('uid');
+    $uid = $form_state->getValue('uid');
     $selector_id = (int) $form_state->getValue('selector_entry_id');
     $connection = \Drupal::database();
 
@@ -161,10 +169,13 @@ class RncSelectNameForm extends FormBase {
       }
     }
 
-    // Correct usage: call leftJoin on the query object, then call fields() on the query.
+    // Correct usage: call leftJoin on the query object,
+    // then call fields() on the query.
     $q = $connection->select('rnc_matches', 'm');
-    $q->leftJoin('rnc_entries', 'e', 'm.selected_entry_id = e.id'); // modify $q, returns alias string
-    $q->fields('e', ['name']); // safe: fields() invoked on $q, using alias 'e'
+    // Modify $q, returns alias string.
+    $q->leftJoin('rnc_entries', 'e', 'm.selected_entry_id = e.id');
+    // safe: fields() invoked on $q, using alias 'e'.
+    $q->fields('e', ['name']);
     $q->condition('m.selector_entry_id', $selector_id);
     $q->condition('m.uid', $uid);
     $match_name = $q->execute()->fetchField();
@@ -225,10 +236,16 @@ class RncSelectNameForm extends FormBase {
         $got = $targets[$i];
 
         // No self; no same non-empty spouse_letter.
-        if ($sel === $got) { $valid = FALSE; break; }
+        if ($sel === $got) {
+          $valid = FALSE;
+          break;
+        }
         $s1 = $spouse_by_id[$sel];
         $s2 = $spouse_by_id[$got];
-        if ($s1 !== '' && $s1 === $s2) { $valid = FALSE; break; }
+        if ($s1 !== '' && $s1 === $s2) {
+          $valid = FALSE;
+          break;
+        }
 
         $pairs[] = [
           'uid' => $uid,
