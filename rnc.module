@@ -1,11 +1,16 @@
 <?php
 
-use Drupal\Core\Form\FormStateInterface;
+/**
+ * @file
+ * Defines the hooks for the random_name_chooser module.
+ */
+
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\Component\Utility\Html;
 use Drupal\Core\Url;
 
 /**
+ *
+ *
  * @file
  * RNC module file. (Intentionally minimal.)
  */
@@ -16,6 +21,9 @@ use Drupal\Core\Url;
  * {@inheritdoc}
  */
 
+/**
+ * Defines the help for the random_name_chooser module.
+ */
 function rnc_help($route_name, RouteMatchInterface $route_match) {
   switch ($route_name) {
     // Main module help for the random_name_chooser module.
@@ -26,12 +34,11 @@ function rnc_help($route_name, RouteMatchInterface $route_match) {
       $output .= '<p>' . t('Random Name Chooser also provides the option to open the module up to site users by adding Permissions to Roles.') . '</p>';
       $output .= '<h2>' . t('Uses') . '</h2>';
       $output .= '<ul>';
-      $output .= '<li>' . t('<a href=":rnc-add-name"><u>Go to Add Names</u></a> to create and manage the list.', [ ':rnc-add-name' => Url::fromRoute('rnc.add_name')->toString(), ]) . '</li>';
-      $output .= '<li>' . t('<a href=":rnc-select-name"><u>Go to Select Name</u></a> once the list has been created.', [ ':rnc-select-name' => Url::fromRoute('rnc.select_name')->toString(), ]) . '</li>';
-      $output .= '<li>' . t('<a href=":rnc-results"><u>Go to View Match</u></a> to see the list of matched names.', [ ':rnc-results' => Url::fromRoute('rnc.results')->toString(), ]) . '</li>';
+      $output .= '<li>' . t('<a href=":rnc-add-name"><u>Go to Add Names</u></a> to create and manage the list.', [':rnc-add-name' => Url::fromRoute('rnc.add_name')->toString()]) . '</li>';
+      $output .= '<li>' . t('<a href=":rnc-select-name"><u>Go to Select Name</u></a> once the list has been created.', [':rnc-select-name' => Url::fromRoute('rnc.select_name')->toString()]) . '</li>';
+      $output .= '<li>' . t('<a href=":rnc-results"><u>Go to View Match</u></a> to see the list of matched names.', [':rnc-results' => Url::fromRoute('rnc.results')->toString()]) . '</li>';
       $output .= '</ul>';
 
       return $output;
-
   }
 }
