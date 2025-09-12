@@ -21,7 +21,7 @@ class RncAdminResultsForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $uid = \Drupal::currentUser()->id();
+    $uid = $this->currentUser()->id();
     $connection = \Drupal::database();
 
     // Confirmation step.
@@ -121,7 +121,7 @@ class RncAdminResultsForm extends FormBase {
    * Perform the matches reset after confirmation.
    */
   public function confirmResetMatches(array &$form, FormStateInterface $form_state) {
-    $uid = \Drupal::currentUser()->id();
+    $uid = $this->currentUser()->id();
     $connection = \Drupal::database();
 
     // Delete only matches for this user; leave entries intact.
