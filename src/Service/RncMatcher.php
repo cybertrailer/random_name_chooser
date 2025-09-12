@@ -41,7 +41,7 @@ class RncMatcher {
       ->execute()
       ->fetchAll();
 
-    if (count($entries) < 2) {
+    if (count($entries) < 3) {
       $this->messenger->addError('Not enough participants to generate matches.');
       return FALSE;
     }
