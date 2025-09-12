@@ -15,8 +15,25 @@ use Drupal\Core\Url;
  */
 class RncAddNameForm extends FormBase {
 
+  /**
+   * Database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
   protected $database;
+
+  /**
+   * Messenger connection.
+   *
+   * @var Drupal\Core\Messenger\MessengerInterface
+   */
   protected $messenger;
+
+  /**
+   * Current user.
+   *
+   * @var Drupal\Core\Session\AccountProxyInterface
+   */
   protected $currentUser;
 
   public function __construct(Connection $database, MessengerInterface $messenger, AccountProxyInterface $current_user) {
@@ -25,6 +42,9 @@ class RncAddNameForm extends FormBase {
     $this->currentUser = $current_user;
   }
 
+  /**
+   * Create container for arrays.
+   */
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('database'),
@@ -33,10 +53,16 @@ class RncAddNameForm extends FormBase {
     );
   }
 
+  /**
+   * Dislay add name form.
+   */
   public function getFormId() {
     return 'rnc_add_name_form';
   }
 
+  /**
+   * Build form.
+   */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $uid = $this->currentUser->id();
 
@@ -45,18 +71,18 @@ class RncAddNameForm extends FormBase {
 
     // Load user setting for spouse letter enable.
     $enable_spouse_letter = (bool) $this->database->select('rnc_user_settings', 's')
-	  ->fields('s', ['enable_spouse_letter'])
-	  ->condition('uid', $uid)
-	  ->execute()
-	  ->fetchField();
+      ->fields('s', ['enable_spouse_letter'])
+      ->condition('uid', $uid)
+      ->execute()
+      ->fetchField();
 
     // --- Confirmation step for reset ---
     if ($form_state->get('reset_confirm')) {
       $form['confirm_message'] = [
         '#type' => 'markup',
         '#markup' => '<div class="messages messages--warning">' .
-          $this->t('Are you sure you want to reset your entire list? This action cannot be undone.') .
-          '</div>',
+        $this->t('Are you sure you want to reset your entire list? This action cannot be undone.') .
+        '</div>',
       ];
 
       $form['actions']['confirm'] = [
@@ -80,21 +106,21 @@ class RncAddNameForm extends FormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Name'),
       '#required' => TRUE,
-	  '#maxlength' => 36,
+      '#maxlength' => 36,
     ];
 
     $form['password'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Password (visible to admin)'),
       '#required' => TRUE,
-	  '#maxlength' => 36,
+      '#maxlength' => 36,
     ];
 
     if ($enable_spouse_letter) {
       $form['spouse_letter'] = [
         '#type' => 'textfield',
         '#title' => $this->t('Spouse Letter'),
-		'#description' => 'Enter the same letter when entering couple names so they will not picking each other',
+        '#description' => 'Enter the same letter when entering couple names so they will not picking each other',
         '#maxlength' => 1,
       ];
     }
@@ -132,13 +158,13 @@ class RncAddNameForm extends FormBase {
           'password' => $entry->password,
           'spouse_letter' => $entry->spouse_letter,
           'operations' => [
-		    'data' => [
-			  '#type' => 'link',
-			  '#title' => $this->t('Delete'),
-			  '#url' => Url::fromRoute('rnc.delete_name', ['id' => $entry->id]),
-			  '#attributes' => ['class' => ['button', 'button--danger']],
-			],
-		  ],
+            'data' => [
+              '#type' => 'link',
+              '#title' => $this->t('Delete'),
+              '#url' => Url::fromRoute('rnc.delete_name', ['id' => $entry->id]),
+              '#attributes' => ['class' => ['button', 'button--danger']],
+            ],
+          ],
         ],
       ];
     }
@@ -169,6 +195,9 @@ class RncAddNameForm extends FormBase {
     return $form;
   }
 
+  /**
+   * Submit form.
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $uid = $this->currentUser->id();
 
