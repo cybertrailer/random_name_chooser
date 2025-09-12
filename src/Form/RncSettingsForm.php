@@ -7,9 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Database\Connection;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
-use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Url;
-use Drupal\Core\Link;
 
 /**
  * Settings form for RNC (per-user).
@@ -17,12 +15,16 @@ use Drupal\Core\Link;
 class RncSettingsForm extends FormBase {
 
   /**
+   * Database connection.
+   *
    * @var \Drupal\Core\Database\Connection
    */
   protected $database;
 
   /**
-   * @var \Drupal\Core\Session\AccountProxyInterface
+   * Messenger connection.
+   *
+   * @var Drupal\Core\Messenger\MessengerInterface
    */
   protected $currentUser;
 
@@ -31,6 +33,9 @@ class RncSettingsForm extends FormBase {
     $this->currentUser = $current_user;
   }
 
+  /**
+   * Create array container.
+   */
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('database'),
@@ -62,8 +67,8 @@ class RncSettingsForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $uid = $this->currentUser()->id();
-	$settings = $this->loadSettings();
-	
+    $settings = $this->loadSettings();
+
     $form['enable_spouse_letter'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Enable spouse letter'),
