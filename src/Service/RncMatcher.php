@@ -6,11 +6,22 @@ use Drupal\Core\Database\Connection;
 use Drupal\Core\Messenger\MessengerInterface;
 
 /**
- * Set RncMatcher
+ * Set matches for name list.
  */
 class RncMatcher {
 
+  /**
+   * Database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
   protected $database;
+
+  /**
+   * Current user.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
   protected $messenger;
 
   /**
