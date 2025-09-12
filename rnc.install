@@ -133,8 +133,9 @@ function rnc_schema() {
  */
 function rnc_uninstall() {
   $connection = \Drupal::database();
-  // Drop tables explicitly (Drupal also drops schema-defined tables on uninstall,
-  // but this is safe for environments where that behavior is altered).
+  // Drop tables explicitly (Drupal also drops schema-defined
+  // tables on uninstall, but this is safe for environments where
+  // that behavior is altered).
   foreach (['rnc_matches', 'rnc_entries', 'rnc_user_settings'] as $table) {
     if ($connection->schema()->tableExists($table)) {
       $connection->schema()->dropTable($table);
@@ -192,14 +193,16 @@ function rnc_update_9001() {
         $schema->addUniqueKey('rnc_matches', 'unique_selector_per_uid', ['uid', 'selector_entry_id']);
       }
       catch (\Exception $e) {
-        // Fallback: ignore if it already exists under a different internal name.
+        // Fallback: ignore if it already exists under
+        // a different internal name.
       }
     }
     if (!$schema->indexExists('rnc_matches', 'selected_idx')) {
       try {
         $schema->addIndex('rnc_matches', 'selected_idx', ['uid', 'selected_entry_id']);
       }
-      catch (\Exception $e) {}
+      catch (\Exception $e) {
+      }
     }
   }
 
@@ -208,13 +211,15 @@ function rnc_update_9001() {
       try {
         $schema->addIndex('rnc_entries', 'uid', ['uid']);
       }
-      catch (\Exception $e) {}
+      catch (\Exception $e) {
+      }
     }
     if (!$schema->indexExists('rnc_entries', 'uid_name')) {
       try {
         $schema->addIndex('rnc_entries', 'uid_name', ['uid', 'name']);
       }
-      catch (\Exception $e) {}
+      catch (\Exception $e) {
+      }
     }
   }
 
