@@ -119,7 +119,7 @@ class RncAddNameForm extends FormBase {
     if ($enable_spouse_letter) {
       $form['spouse_letter'] = [
         '#type' => 'textfield',
-        '#title' => $this->t('Spouse Letter'),
+        '#title' => $this->t('Couple Letter'),
         '#description' => 'Enter the same letter when entering couple names so they will not picking each other',
         '#maxlength' => 1,
       ];
