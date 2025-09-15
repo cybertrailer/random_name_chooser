@@ -140,7 +140,7 @@ class RncAddNameForm extends FormBase {
     $header = [
       'name' => $this->t('Name'),
       'password' => $this->t('Password'),
-      'spouse_letter' => $this->t('Spouse Letter'),
+      'spouse_letter' => $this->t('Couple Letter'),
       'operations' => $this->t('Operations'),
     ];
 
