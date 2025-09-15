@@ -71,7 +71,7 @@ class RncSettingsForm extends FormBase {
 
     $form['enable_spouse_letter'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Enable spouse letter'),
+      '#title' => $this->t('Enable couple letter'),
       '#default_value' => $settings['enable_spouse_letter'] ?? 0,
     ];
 
