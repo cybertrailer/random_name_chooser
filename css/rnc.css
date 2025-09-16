@@ -25,14 +25,14 @@ button.button--danger:hover {
 }
 
 .rnc-row {
-	display: flex;
-	justify-content: flex-start;
-	margin: 4px 8px;
-	clear: both;
+  display: flex;
+  justify-content: flex-start;
+  margin: 4px 8px;
+  clear: both;
 }
 
 .rnc-row div {
-	min-width: 120px;
-	padding: 10px 18px;
-	clear: both;
+  min-width: 120px;
+  padding: 10px 18px;
+  clear: both;
 }

@@ -5,11 +5,28 @@ namespace Drupal\rnc\Service;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Messenger\MessengerInterface;
 
+/**
+ * Set matches for name list.
+ */
 class RncMatcher {
 
+  /**
+   * Database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
   protected $database;
+
+  /**
+   * Current user.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
   protected $messenger;
 
+  /**
+   * Get database and messneger into array.
+   */
   public function __construct(Connection $database, MessengerInterface $messenger) {
     $this->database = $database;
     $this->messenger = $messenger;
@@ -24,7 +41,7 @@ class RncMatcher {
       ->execute()
       ->fetchAll();
 
-    if (count($entries) < 2) {
+    if (count($entries) < 3) {
       $this->messenger->addError('Not enough participants to generate matches.');
       return FALSE;
     }
@@ -38,7 +55,7 @@ class RncMatcher {
       $assignments = [];
 
       foreach ($entries as $selector) {
-        $match = null;
+        $match = NULL;
         foreach ($shuffled as $candidate) {
           if ($candidate->id !== $selector->id && $candidate->spouse_letter !== $selector->spouse_letter) {
             $match = $candidate;
@@ -46,7 +63,7 @@ class RncMatcher {
           }
         }
 
-        if ($match === null) {
+        if ($match === NULL) {
           $valid = FALSE;
           break;
         }
@@ -62,7 +79,7 @@ class RncMatcher {
               'selector_id' => $selector_id,
               'match_id' => $match->id,
               'selected_name' => $match->name,
-              'created' => \Drupal::time()->getRequestTime(),
+              'created' => $this->time()->getRequestTime(),
             ])
             ->execute();
         }
@@ -96,4 +113,5 @@ class RncMatcher {
 
     return $count > 0;
   }
+
 }

@@ -4,11 +4,31 @@ namespace Drupal\rnc\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Database\Connection;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Admin form to view and reset generated matches for the current user's list.
  */
 class RncAdminResultsForm extends FormBase {
+
+  /**
+   * Database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
+  protected $database;
+
+  public function __construct(Connection $database) {
+    $this->database = $database;
+  }
+
+  /**
+   * Create array container.
+   */
+  public static function create(ContainerInterface $container) {
+    return new static($container->get('database'));
+  }
 
   /**
    * {@inheritdoc}
@@ -20,9 +40,11 @@ class RncAdminResultsForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
-    $uid = \Drupal::currentUser()->id();
-    $connection = \Drupal::database();
+  public function buildForm(array $form, FormStateInterface $form_state, $uid = NULL) {
+
+    if (empty($uid)) {
+      $uid = $this->currentUser()->id();
+    }
 
     // Confirmation step.
     if ($form_state->get('confirm_reset')) {
@@ -47,7 +69,7 @@ class RncAdminResultsForm extends FormBase {
     }
 
     // Display matches table.
-    $query = $connection->select('rnc_matches', 'm');
+    $query = $this->database->select('rnc_matches', 'm');
     $query->leftJoin('rnc_entries', 's', 'm.selector_entry_id = s.id');
     $query->leftJoin('rnc_entries', 't', 'm.selected_entry_id = t.id');
     $query->fields('m', ['id']);
@@ -91,6 +113,14 @@ class RncAdminResultsForm extends FormBase {
       '#button_type' => 'danger',
     ];
 
+    // --- Add names button ---
+    $form['actions']['add_names'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Add Names'),
+      '#submit' => ['::addNAmes'],
+      '#limit_validation_errors' => [],
+    ];
+
     return $form;
   }
 
@@ -103,14 +133,20 @@ class RncAdminResultsForm extends FormBase {
   }
 
   /**
+   * Trigger add names.
+   */
+  public function addNames(array &$form, FormStateInterface $form_state) {
+    $form_state->setRedirect('rnc.add_name');
+  }
+
+  /**
    * Perform the matches reset after confirmation.
    */
   public function confirmResetMatches(array &$form, FormStateInterface $form_state) {
-    $uid = \Drupal::currentUser()->id();
-    $connection = \Drupal::database();
+    $uid = $this->currentUser()->id();
 
     // Delete only matches for this user; leave entries intact.
-    $connection->delete('rnc_matches')
+    $this->database->delete('rnc_matches')
       ->condition('uid', $uid)
       ->execute();
 

@@ -21,6 +21,11 @@ class RncDeleteNameForm extends ConfirmFormBase {
    */
   protected $database;
 
+  /**
+   * Current user.
+   *
+   * @var \Drupal\Core\Session\AccountProxyInterface
+   */
   protected $currentUser;
 
   /**
@@ -35,6 +40,9 @@ class RncDeleteNameForm extends ConfirmFormBase {
     $this->currentUser = $current_user;
   }
 
+  /**
+   * Create array container.
+   */
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('database'),
@@ -75,17 +83,17 @@ class RncDeleteNameForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-	$uid = $this->currentUser->id();
+    $uid = $this->currentUser->id();
     if ($this->id) {
       $this->database->delete('rnc_entries')
         ->condition('id', $this->id)
         ->execute();
-		$this->database->delete('rnc_matches')
-		  ->condition('uid', $uid)
-		  ->execute();
-		}
-      $this->messenger()->addStatus($this->t('The name has been deleted.'));
-		
+      $this->database->delete('rnc_matches')
+        ->condition('uid', $uid)
+        ->execute();
+    }
+    $this->messenger()->addStatus($this->t('The name has been deleted.'));
+
     $form_state->setRedirect('rnc.add_name');
   }
 

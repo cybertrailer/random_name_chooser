@@ -2,5 +2,43 @@
 
 /**
  * @file
+ * Defines the hooks for the random_name_chooser module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
+
+/**
+ *
+ *
+ * @file
  * RNC module file. (Intentionally minimal.)
  */
+
+/**
+ * Implements hook_help().
+ *
+ * {@inheritdoc}
+ */
+
+/**
+ * Defines the help for the random_name_chooser module.
+ */
+function rnc_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the random_name_chooser module.
+    case 'help.page.rnc':
+      $output = '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Add a list of names and randomly match them with each other') . '</p>';
+      $output .= '<p>' . t('Random Name Chooser provides settings so admins can create a title for the list, add instructions for participants and assign a single letter to couples so the do not pick each other.') . '</p>';
+      $output .= '<p>' . t('Random Name Chooser also provides the option to open the module up to site users by adding Permissions to Roles.') . '</p>';
+      $output .= '<h2>' . t('Uses') . '</h2>';
+      $output .= '<ul>';
+      $output .= '<li>' . t('<a href=":rnc-add-name"><u>Go to Add Names</u></a> to create and manage the list.', [':rnc-add-name' => Url::fromRoute('rnc.add_name')->toString()]) . '</li>';
+      $output .= '<li>' . t('<a href=":rnc-select-name"><u>Go to Select Name</u></a> once the list has been created.', [':rnc-select-name' => Url::fromRoute('rnc.select_name')->toString()]) . '</li>';
+      $output .= '<li>' . t('<a href=":rnc-results"><u>Go to View Match</u></a> to see the list of matched names.', [':rnc-results' => Url::fromRoute('rnc.results')->toString()]) . '</li>';
+      $output .= '</ul>';
+
+      return $output;
+  }
+}

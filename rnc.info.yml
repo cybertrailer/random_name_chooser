@@ -2,4 +2,4 @@ name: Random Name Chooser
 type: module
 description: Per-user random name chooser with spouse constraints and per-user settings.
 core_version_requirement: ^10 || ^11
-package: Custom
+package: Other

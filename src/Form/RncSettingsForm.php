@@ -7,9 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Database\Connection;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
-use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Url;
-use Drupal\Core\Link;
 
 /**
  * Settings form for RNC (per-user).
@@ -17,12 +15,16 @@ use Drupal\Core\Link;
 class RncSettingsForm extends FormBase {
 
   /**
+   * Database connection.
+   *
    * @var \Drupal\Core\Database\Connection
    */
   protected $database;
 
   /**
-   * @var \Drupal\Core\Session\AccountProxyInterface
+   * Messenger connection.
+   *
+   * @var Drupal\Core\Messenger\MessengerInterface
    */
   protected $currentUser;
 
@@ -31,6 +33,9 @@ class RncSettingsForm extends FormBase {
     $this->currentUser = $current_user;
   }
 
+  /**
+   * Create array container.
+   */
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('database'),
@@ -62,19 +67,18 @@ class RncSettingsForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $uid = $this->currentUser()->id();
-	$settings = $this->loadSettings();
-	
-    $form['max_entries'] = [
-      '#type' => 'number',
-      '#title' => $this->t('Maximum entries'),
-      '#default_value' => $settings['max_entries'] ?? 20,
-      '#min' => 1,
-    ];
+    $settings = $this->loadSettings();
 
     $form['enable_spouse_letter'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Enable spouse letter'),
+      '#title' => $this->t('Enable couple letter'),
       '#default_value' => $settings['enable_spouse_letter'] ?? 0,
+    ];
+
+    $form['group_name'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Group Name'),
+      '#default_value' => $settings['group_name'] ?? '',
     ];
 
     $form['instructions'] = [
@@ -92,7 +96,6 @@ class RncSettingsForm extends FormBase {
       '#weight' => 100,
     ];
 
-
     $form['actions']['#type'] = 'actions';
     $form['actions']['submit'] = [
       '#type' => 'submit',
@@ -100,7 +103,23 @@ class RncSettingsForm extends FormBase {
       '#button_type' => 'primary',
     ];
 
+    // --- Add names button ---
+    $form['actions']['add_names'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Add Names'),
+      '#submit' => ['::addNAmes'],
+      '#button_type' => 'primary',
+      '#limit_validation_errors' => [],
+    ];
+
     return $form;
+  }
+
+  /**
+   * Trigger add names.
+   */
+  public function addNames(array &$form, FormStateInterface $form_state) {
+    $form_state->setRedirect('rnc.add_name');
   }
 
   /**
@@ -113,8 +132,8 @@ class RncSettingsForm extends FormBase {
     $this->database->merge('rnc_user_settings')
       ->key(['uid' => $uid])
       ->fields([
-        'max_entries' => $form_state->getValue('max_entries'),
         'enable_spouse_letter' => $form_state->getValue('enable_spouse_letter'),
+        'group_name' => $form_state->getValue('group_name'),
         'instructions' => $form_state->getValue('instructions')['value'],
       ])
       ->execute();
